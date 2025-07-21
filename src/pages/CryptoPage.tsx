@@ -5,7 +5,7 @@ import CryptoTable from "../components/CryptoTable"
 import useDebounce from "../hooks/useDebounce"
 import useFilterStateWithUrl from "../hooks/useFilterStateWithUrl"
 import useInfiniteScroll from '../hooks/useInfiniteScroll'
-import { INFINITE_SCROLL_LIMIT } from "../libs/constants"
+import { DEFAULT_MAX_PRICE, DEFAULT_MIN_MARKET_CAP, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_SORT_DIR, DEFAULT_SORT_KEY, INFINITE_SCROLL_LIMIT } from "../libs/constants"
 import type { CryptoCurrency } from "../types/coinmarketcap"
 
 const CryptoPage = () => {
@@ -19,12 +19,12 @@ const CryptoPage = () => {
     pageSize, setPageSize,
     resetFilters,
   } = useFilterStateWithUrl({
-    minMarketCap: 0,
-    maxPrice: 117839,
-    sortKey: 'market_cap',
-    sortDir: 'desc',
-    page: 1,
-    pageSize: 10,
+    minMarketCap: DEFAULT_MIN_MARKET_CAP,
+    maxPrice: DEFAULT_MAX_PRICE,
+    sortKey: DEFAULT_SORT_KEY,
+    sortDir: DEFAULT_SORT_DIR,
+    page: DEFAULT_PAGE  ,
+    pageSize: DEFAULT_PAGE_SIZE,
   })
 
   // Debounced values

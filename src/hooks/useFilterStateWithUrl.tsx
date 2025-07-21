@@ -15,11 +15,21 @@ export default function useFilterStateWithUrl(defaults: {
   const [searchParams, setSearchParams] = useSearchParams()
 
   // State for each filter
-  const [minMarketCap, setMinMarketCap] = useState(() => parseNumberOrDefault(searchParams.get('minMarketCap'), defaults.minMarketCap))
-  const [maxPrice, setMaxPrice] = useState(() => parseNumberOrDefault(searchParams.get('maxPrice'), defaults.maxPrice))
+  const [minMarketCap, setMinMarketCap] = useState(() => {
+    const param = searchParams.get('minMarketCap')
+    return param === null ? defaults.minMarketCap : parseNumberOrDefault(param, defaults.minMarketCap)
+  })
+  const [maxPrice, setMaxPrice] = useState(() => {
+    const val = parseNumberOrDefault(searchParams.get('maxPrice'), defaults.maxPrice)
+    return val === 0 ? defaults.maxPrice : val
+  })
   const [sortKey, setSortKey] = useState(() => searchParams.get('sortBy') || defaults.sortKey)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>(() => searchParams.get('order') === 'asc' ? 'asc' : 'desc')
-  const [page, setPage] = useState(() => parseNumberOrDefault(searchParams.get('page'), defaults.page))
+  const [page, _setPage] = useState(() => {
+    const p = parseNumberOrDefault(searchParams.get('page'), defaults.page)
+    return p < 1 ? 1 : p
+  })
+  const setPage = (p: number) => _setPage(p < 1 ? 1 : p)
   const [pageSize, setPageSize] = useState<typeof PAGE_SIZE_OPTIONS[number]>(() => {
     const val = searchParams.get('pageSize')
     if (val === 'All') return 'All'
