@@ -98,7 +98,7 @@ const CryptoPage = () => {
   // Infinite scroll for 'All' mode
   useInfiniteScroll(
     () => {
-      if (!isFetching) setPage(prev => prev + 1)
+      if (!isFetching) setPage(page + 1)
     },
     pageSize === 'All'
   )
