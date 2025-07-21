@@ -1,0 +1,144 @@
+import { useEffect, useRef, useState } from "react"
+import { useCoinLogos, useCoinMarketCap } from "../api/coinmarketcap"
+import CryptoFilters from "../components/CryptoFilters"
+import CryptoTable from "../components/CryptoTable"
+import useDebounce from "../hooks/useDebounce"
+import useFilterStateWithUrl from "../hooks/useFilterStateWithUrl"
+import useInfiniteScroll from '../hooks/useInfiniteScroll'
+import { INFINITE_SCROLL_LIMIT } from "../libs/constants"
+import type { CryptoCurrency } from "../types/coinmarketcap"
+
+const CryptoPage = () => {
+  // Use the custom hook to manage filter state and URL sync
+  const {
+    minMarketCap, setMinMarketCap,
+    maxPrice, setMaxPrice,
+    sortKey, setSortKey,
+    sortDir, setSortDir,
+    page, setPage,
+    pageSize, setPageSize,
+    resetFilters,
+  } = useFilterStateWithUrl({
+    minMarketCap: 0,
+    maxPrice: 117839,
+    sortKey: 'market_cap',
+    sortDir: 'desc',
+    page: 1,
+    pageSize: 10,
+  })
+
+  // Debounced values
+  const debouncedMinMarketCap = useDebounce(minMarketCap, 300)
+  const debouncedMaxPrice = useDebounce(maxPrice, 300)
+  // Sorting handler: update global sortKey/sortDir
+  const onSortChange = (key: string) => {
+    if (sortKey === key) setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
+    else {
+      setSortKey(key)
+      setSortDir('desc')
+    }
+  }
+
+  // Compute server-side pagination params
+  // CoinMarketCap API: start is 1-based, limit is max 5000
+  const limit = pageSize === 'All' ? INFINITE_SCROLL_LIMIT : pageSize
+  const start = pageSize === 'All'
+    ? ((page - 1) * INFINITE_SCROLL_LIMIT) + 1
+    : ((page - 1) * (pageSize as number)) + 1
+
+  const { data, error, isFetching } = useCoinMarketCap({
+    price_max: debouncedMaxPrice,
+    market_cap_min: debouncedMinMarketCap,
+    sort: sortKey,
+    sort_dir: sortDir,
+    start,
+    limit,
+  })
+
+  // Get all IDs of displayed cryptos
+  const allIds = data?.data ? data.data.map(c => c.id) : []
+  // Get logos for all displayed cryptos
+  const { data: logos } = useCoinLogos(allIds)
+
+  // Local state to accumulate all data for infinite scroll
+  const [allData, setAllData] = useState<CryptoCurrency[]>([])
+  // To track last filter state for reset
+  const lastFilterRef = useRef({ minMarketCap, maxPrice, sortKey, sortDir })
+
+  // When new data arrives in 'All' mode, append to allData
+  useEffect(() => {
+    if (pageSize === 'All' && data?.data) {
+      setAllData(prev => {
+        // Avoid duplicates by id
+        const ids = new Set(prev.map(c => c.id))
+        const newItems = data.data.filter(c => !ids.has(c.id))
+        return [...prev, ...newItems]
+      })
+    }
+  }, [data, pageSize])
+
+  // Reset allData if filters change (except page)
+  useEffect(() => {
+    const last = lastFilterRef.current
+    if (
+      last.minMarketCap !== minMarketCap ||
+      last.maxPrice !== maxPrice ||
+      last.sortKey !== sortKey ||
+      last.sortDir !== sortDir ||
+      pageSize !== 'All'
+    ) {
+      setAllData([])
+    }
+    lastFilterRef.current = { minMarketCap, maxPrice, sortKey, sortDir }
+  }, [minMarketCap, maxPrice, sortKey, sortDir, pageSize])
+
+  // Use allData for infinite scroll, else use paged data
+  const pagedData = pageSize === 'All' ? allData : (data?.data || [])
+
+  // Infinite scroll for 'All' mode
+  useInfiniteScroll(
+    () => {
+      if (!isFetching) setPage(prev => prev + 1)
+    },
+    pageSize === 'All'
+  )
+
+  if (error) return <div className="text-center mt-8 text-red-500">Error: {error.message}</div>
+  
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4 text-center">Latest Cryptocurrency Listings</h1>
+      <CryptoFilters
+        minMarketCap={minMarketCap}
+        maxPrice={maxPrice}
+        sortKey={sortKey}
+        sortDir={sortDir}
+        pageSize={pageSize}
+        onMinMarketCapChange={setMinMarketCap}
+        onMaxPriceChange={setMaxPrice}
+        onSortKeyChange={setSortKey}
+        onSortDirChange={setSortDir}
+        onPageSizeChange={setPageSize}
+        onReset={resetFilters}
+      />
+      <div className="mb-2 text-right text-sm text-gray-600">
+        {pageSize !== 'All' && (
+          <span> Page: <span className="font-semibold">{page}</span></span>
+        )}
+      </div>
+      <CryptoTable
+        data={pagedData}
+        sortKey={sortKey}
+        sortDir={sortDir}
+        onSortChange={onSortChange}
+        logos={logos}
+        pageSize={pageSize}
+        page={page}
+        setPage={setPage}
+        loading={isFetching}
+      />
+    </div>
+  )
+}
+
+export default CryptoPage

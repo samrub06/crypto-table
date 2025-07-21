@@ -1,19 +1,21 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
-import CityDetails from './pages/CityDetails'
-import CityGridPage from './pages/CityGridPage'
+import CryptoPage from './pages/CryptoPage'
+
+const queryClient = new QueryClient()
+
+
 
 function App() {
-
   return (
-    <>
-         <HashRouter>
-      <Routes>
-        <Route path="/" element={<CityGridPage />} />
-        <Route path="/city/:name" element={<CityDetails />} />
-      </Routes>
-    </HashRouter>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<CryptoPage />} />
+        </Routes>
+      </HashRouter>
+    </QueryClientProvider>
   )
 }
 

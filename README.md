@@ -1,83 +1,61 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-## Screenshots
+# CryptoTable App – Quick Documentation
 
-### Homepage
-![Homepage](./public/homepage.png)
+## Overview
 
-### Homepage Responsive
-![Homepage Responsive](./public/homepage-responsive.png)
+This app displays a list of cryptocurrencies with filters and sorting options. It fetches data from the CoinMarketCap API and allows users to filter by market cap, price, sort by various fields, and paginate or use infinite scroll.
 
-### Details Page
-![Details Page](./public/detailspage.png)
+---
 
-### Preview
-![Preview](./public/preview.png)
+## Main Components
 
-Currently, two official plugins are available:
+### 1. CryptoPage.tsx
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Main page for displaying the cryptocurrency table.
+- Handles:
+  - Fetching crypto data and logos.
+  - Managing filters, sorting, pagination, and infinite scroll.
+  - Passing data and handlers to child components.
 
-## Expanding the ESLint configuration
+### 2. CryptoFilters.tsx
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Presentational component for filter controls.
+- Allows user to:
+  - Set minimum market cap and maximum price.
+  - Choose sort key and direction.
+  - Select items per page or infinite scroll.
+  - Reset all filters.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Folder Structure (suggested)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+<code_block_to_apply_changes_from>
+src/
+  api/                # API hooks and data fetching logic
+    coinmarketcap.ts
+  components/         # Reusable UI components
+    CryptoFilters.tsx
+    CryptoTable.tsx
+  hooks/              # Custom React hooks
+    useDebounce.ts
+    useFilterStateWithUrl.ts
+    useInfiniteScroll.ts
+  libs/               # Constants and utility functions
+    constants.ts
+  pages/              # Page-level components
+    CryptoPage.tsx
+  types/              # TypeScript type definitions
+    coinmarketcap.ts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Let me know if you want more details or another part of the app explained!
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## env api key
+
+VITE_COINMARKETCAP_KEY=0d0aec28-1e4f-4ace-b6f3-ba559214ab15
