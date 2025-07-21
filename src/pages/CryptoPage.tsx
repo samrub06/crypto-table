@@ -123,7 +123,15 @@ const CryptoPage = () => {
     )
   }
 
-  if (error) return <div className="text-center mt-8 text-red-500">Error: {error.message}</div>
+
+  if (error) return (
+    <div className="flex flex-col items-center justify-center mt-12" role="alert" aria-live="assertive">
+      <div className="flex items-center gap-2 text-red-600 text-lg font-semibold mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" /></svg>
+        {error.message.includes('Network') ? 'Network error: please check your internet connection.' : 'An error occurred while loading data.'}
+      </div>
+    </div>
+  )
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6">

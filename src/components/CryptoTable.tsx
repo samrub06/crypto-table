@@ -13,7 +13,8 @@ const CryptoTable = ({ data, sortKey, sortDir, onSortChange, logos, pageSize, se
 
   return (
     <div className="overflow-x-auto bg-white p-0 border border-gray-200">
-      <table className="min-w-full bg-white border border-gray-200 table-fixed text-sm">
+      <table className="min-w-full bg-white border border-gray-200 table-fixed text-sm" role="table" aria-label="Cryptocurrency data table">
+        <caption className="sr-only">Latest cryptocurrency listings with filters and sorting</caption>
         <thead>
           <tr className="bg-gray-50 border-b border-gray-200">
             {columns.map(col => (
@@ -22,16 +23,21 @@ const CryptoTable = ({ data, sortKey, sortDir, onSortChange, logos, pageSize, se
                 className={`py-1.5 px-2 text-gray-700 font-medium border-r border-gray-100 last:border-r-0 ${col.className} ${sortKey === col.key ? 'bg-blue-50' : ''}`}
                 onClick={() => onSortChange && onSortChange(col.key)}
                 style={{ cursor: 'pointer', fontWeight: 500 }}
+                aria-sort={sortKey === col.key ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
+                scope="col"
+                tabIndex={0}
+                aria-label={`Sort by ${col.label}`}
+                onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onSortChange && onSortChange(col.key)}
               >
                 {col.label}
                 {sortKey === col.key && (
-                  <span className="ml-1 text-blue-500">{sortDir === 'asc' ? '\u25b2' : '\u25bc'}</span>
+                  <span className="ml-1 text-blue-500" aria-hidden="true">{sortDir === 'asc' ? '\u25b2' : '\u25bc'}</span>
                 )}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody aria-live="polite">
           {data.length === 0 && !loading ? (
             <tr>
               <td colSpan={columns.length} className="py-6 text-center text-gray-400 bg-white border-b border-gray-100">No result</td>
