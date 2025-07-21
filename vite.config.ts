@@ -9,7 +9,7 @@ export default defineConfig(({ command, mode }) => {
   
   return {
     plugins: [react(), tailwindcss()],
-    base: isProduction ? '/weather-app/' : './',
+    base: isProduction ? '/crypto-table/' : './',
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
