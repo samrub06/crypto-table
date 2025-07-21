@@ -6,6 +6,7 @@ import useDebounce from "../hooks/useDebounce"
 import useFilterStateWithUrl from "../hooks/useFilterStateWithUrl"
 import useInfiniteScroll from '../hooks/useInfiniteScroll'
 import { DEFAULT_MAX_PRICE, DEFAULT_MIN_MARKET_CAP, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_SORT_DIR, DEFAULT_SORT_KEY, INFINITE_SCROLL_LIMIT } from "../libs/constants"
+import { exportToCSV, formatShortNumber } from "../libs/utils"
 import type { CryptoCurrency } from "../types/coinmarketcap"
 
 const CryptoPage = () => {
@@ -103,11 +104,30 @@ const CryptoPage = () => {
     pageSize === 'All'
   )
 
+  // Export CSV handler (moved from CryptoTable)
+  const handleExport = () => {
+    exportToCSV(
+      pagedData.map(crypto => ({
+        name: `${crypto.name} (${crypto.symbol})`,
+        price: crypto.quote.USD.price.toFixed(2),
+        market_cap: formatShortNumber(crypto.quote.USD.market_cap),
+        percent_change_24h: `${crypto.quote.USD.percent_change_24h > 0 ? '+' : crypto.quote.USD.percent_change_24h < 0 ? '-' : ''}${Math.abs(crypto.quote.USD.percent_change_24h).toFixed(2)}%`
+      })),
+      [
+        { key: 'name', label: 'Name' },
+        { key: 'price', label: 'Price (USD)' },
+        { key: 'market_cap', label: 'Market Cap' },
+        { key: 'percent_change_24h', label: '24h % Change' },
+      ],
+      'cryptos.csv'
+    )
+  }
+
   if (error) return <div className="text-center mt-8 text-red-500">Error: {error.message}</div>
   
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Latest Cryptocurrency Listings</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6">
+      <h1 className="text-3xl font-extrabold mb-8 text-center text-blue-700 tracking-tight drop-shadow">Latest Cryptocurrency Listings</h1>
       <CryptoFilters
         minMarketCap={minMarketCap}
         maxPrice={maxPrice}
@@ -121,10 +141,22 @@ const CryptoPage = () => {
         onPageSizeChange={setPageSize}
         onReset={resetFilters}
       />
-      <div className="mb-2 text-right text-sm text-gray-600">
+      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-end ">
+         <button
+          className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold shadow hover:from-blue-600 hover:to-blue-500 transition text-sm border-0 disabled:opacity-50"
+          onClick={handleExport}
+          disabled={pagedData.length === 0}
+        >
+          Export CSV
+        </button>
+      </div>
+      <div className="text-right text-xs text-gray-400 font-semibold">
         {pageSize !== 'All' && (
-          <span> Page: <span className="font-semibold">{page}</span></span>
+          <span>Page <span className="font-bold text-blue-600">{page}</span></span>
         )}
+      </div>
+  
       </div>
       <CryptoTable
         data={pagedData}

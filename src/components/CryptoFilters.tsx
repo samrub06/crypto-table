@@ -43,25 +43,23 @@ const CryptoFilters: React.FC<CryptoFiltersProps> = ({
 
 
   return (
-    <div className="flex flex-wrap gap-4 mb-4 items-end justify-center">
+    <div className="flex flex-wrap gap-4 mb-6 items-end justify-center bg-white/80 rounded-xl shadow p-4 border border-gray-100">
       <div>
-        <label className="block text-sm font-medium">Min Market Cap ($)</label>
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            className="border rounded px-2 py-1 w-40"
-            min={0}
-            step={100000}
-            value={minMarketCap}
-            onChange={e => onMinMarketCapChange(Number(e.target.value))}
-          />
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium">Max Price ($)</label>
+        <label className="block text-xs font-semibold text-gray-500 mb-1">Min Market Cap ($)</label>
         <input
           type="number"
-          className="border rounded px-2 py-1 w-32"
+          className="border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 w-40 text-sm transition"
+          min={0}
+          step={100000}
+          value={minMarketCap}
+          onChange={e => onMinMarketCapChange(Number(e.target.value))}
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-semibold text-gray-500 mb-1">Max Price ($)</label>
+        <input
+          type="number"
+          className="border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 w-32 text-sm transition"
           value={maxPrice}
           min={0}
           step={1}
@@ -69,9 +67,9 @@ const CryptoFilters: React.FC<CryptoFiltersProps> = ({
         />
       </div>
       <div>
-        <label className="block text-sm font-medium">Sort by</label>
+        <label className="block text-xs font-semibold text-gray-500 mb-1">Sort by</label>
         <select
-          className="border rounded px-2 py-1 w-40"
+          className="border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 w-40 text-sm transition"
           value={sortKey}
           onChange={e => onSortKeyChange(e.target.value)}
         >
@@ -79,9 +77,9 @@ const CryptoFilters: React.FC<CryptoFiltersProps> = ({
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium">Direction</label>
+        <label className="block text-xs font-semibold text-gray-500 mb-1">Direction</label>
         <select
-          className="border rounded px-2 py-1 w-24"
+          className="border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 w-24 text-sm transition"
           value={sortDir}
           onChange={e => onSortDirChange(e.target.value as 'asc' | 'desc')}
         >
@@ -90,9 +88,9 @@ const CryptoFilters: React.FC<CryptoFiltersProps> = ({
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium">Items per page</label>
+        <label className="block text-xs font-semibold text-gray-500 mb-1">Items per page</label>
         <select
-          className="border rounded px-2 py-1 w-32"
+          className="border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 w-32 text-sm transition"
           value={pageSize}
           onChange={e => onPageSizeChange(e.target.value === 'All' ? 'All' : Number(e.target.value) as typeof PAGE_SIZE_OPTIONS[number])}
         >
@@ -101,7 +99,7 @@ const CryptoFilters: React.FC<CryptoFiltersProps> = ({
       </div>
       <div className="flex flex-col justify-end">
         <button
-          className="px-3 py-1 rounded border bg-gray-200 hover:bg-gray-300 text-sm"
+          className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold shadow hover:from-blue-600 hover:to-blue-500 transition text-sm border-0"
           onClick={onReset}
         >
           Reset filters
